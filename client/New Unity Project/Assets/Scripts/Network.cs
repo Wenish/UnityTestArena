@@ -6,90 +6,124 @@ public class Network : MonoBehaviour {
 
 	static SocketIOComponent socket;
 
-	public GameObject playerPrefab;
-
 	public GameObject myPlayer;
 
-	Dictionary<string, GameObject> players;
+	public Spawner spawner;
+
 
 	// Use this for initialization
 	void Start () {
 		socket = GetComponent<SocketIOComponent> ();
 		socket.On ("open", OnConnected);
+		socket.On ("register", OnRegister);
 		socket.On ("spawn", OnSpawned);
 		socket.On ("move", OnMove);
+		socket.On ("follow", OnFollow);
 		socket.On ("disconnected", OnDisconnected);
 		socket.On ("requestPosition", OnRequestPosition);
 		socket.On ("updatePosition", OnUpdatePosition);
 
-		players = new Dictionary<string, GameObject> ();
 	}
 
 	void OnConnected(SocketIOEvent e) {
 		Debug.Log("connected");
 	}
 
+	void OnRegister(SocketIOEvent e) {
+		Debug.Log ("Successfully registered, with id: " + e.data);
+		spawner.AddPlayer (e.data ["id"].str, myPlayer);
+	}
+
 	void OnSpawned(SocketIOEvent e) {
-		Debug.Log ("spawned" + e.data["id"].ToString());
-		var player = Instantiate (playerPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+		Debug.Log ("spawned" + e.data["id"].str);
+		var player = spawner.SpawnPlayer (e.data["id"].str);
 
 		if (e.data ["x"]) {
 			
-			var movePosition = new Vector3 (GetFloatFromJson (e.data, "x"), 0, GetFloatFromJson (e.data, "y"));
+			var movePosition = GetVectorFromJSON (e);
 
-			var navigationPos = player.GetComponent<NavigatePosition> ();
+			var navigationPos = player.GetComponent<Navigator> ();
 
 			navigationPos.NavigateTo (movePosition);
 		}
-
-		players.Add (e.data["id"].ToString(), player);
-		Debug.Log ("count: " + players.Count);
 	}
 
 	void OnMove(SocketIOEvent e) {
 		Debug.Log ("player is moving" + e.data);
 
-		var position = new Vector3 (GetFloatFromJson (e.data, "x"), 0, GetFloatFromJson (e.data, "y"));
+		var position = GetVectorFromJSON (e);
 			
-		var player = players [e.data ["id"].ToString()];
+		var player = spawner.FindPlayer(e.data ["id"].str);
 
-		var navigationPos = player.GetComponent<NavigatePosition> ();
+		var navigationPos = player.GetComponent<Navigator> ();
 
 		navigationPos.NavigateTo (position);
 
 	}
 
+	void OnFollow(SocketIOEvent e) {
+		Debug.Log ("follow request " + e.data);
+		var player = spawner.FindPlayer(e.data ["id"].str);
+
+		var target = spawner.FindPlayer(e.data ["targetId"].str);
+
+		Debug.Log ("target: " + target.name); 
+
+		var follower = player.GetComponent<Follower> ();
+
+		follower.target = target.transform;
+	}
+
 	void OnRequestPosition(SocketIOEvent e) {
 		Debug.Log ("server is requesting position");
-		socket.Emit("updatePosition", new JSONObject(VectorToJson(myPlayer.transform.position)));
+		socket.Emit("updatePosition", VectorToJson(myPlayer.transform.position));
 	}
 
 	void OnDisconnected(SocketIOEvent e) {
 		Debug.Log ("player disconnected: " + e.data);
 
-		var id = e.data ["id"].ToString ();
+		var id = e.data ["id"].str;
 
-		var player = players [id];
-		Destroy (player);
-		players.Remove (id);
+		spawner.Remove (id);
 	}
 
 	void OnUpdatePosition(SocketIOEvent e) {
 		Debug.Log ("update position " + e.data);
 
-		var position = new Vector3 (GetFloatFromJson (e.data, "x"), 0, GetFloatFromJson (e.data, "y"));
+		var position = GetVectorFromJSON (e);
 
-		var player = players [e.data ["id"].ToString()];
+		var player = spawner.FindPlayer(e.data ["id"].str);
 
 		player.transform.position = position;
 	}
 
-	float GetFloatFromJson(JSONObject data, string key){
-		return float.Parse(data [key].str);
+	static public void Move (Vector3 position) {
+		// send pos to node
+		Debug.Log("sending position to node" + Network.VectorToJson(position));
+		socket.Emit("move", Network.VectorToJson(position));
 	}
 
-	public static string VectorToJson (Vector3 vector) {
-		return string.Format (@"{{""x"":""{0}"", ""y"":""{1}""}}", vector.x, vector.z);
+	static public void Follow (string id) {
+		// send pos to node
+		Debug.Log("sending follow player id" + Network.PlayerIdToJson(id));
+		socket.Emit("follow", Network.PlayerIdToJson(id));
+	}
+
+	static Vector3 GetVectorFromJSON(SocketIOEvent e){
+		return new Vector3 (e.data ["x"].n, 0, e.data ["y"].n);
+	}
+
+	public static JSONObject VectorToJson (Vector3 vector) {
+		JSONObject j = new JSONObject (JSONObject.Type.OBJECT);
+		j.AddField ("x", vector.x);
+		j.AddField ("y", vector.z);
+		return j;
+	}
+
+	public static JSONObject PlayerIdToJson (string id) {
+		JSONObject j = new JSONObject (JSONObject.Type.OBJECT);
+		j.AddField ("targetId", id);
+		return j;
 	}
 
 }

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClickMove : MonoBehaviour {
+public class ClickMove : MonoBehaviour, IClickable {
 
 	public GameObject player;
 
-	public void OnClick (Vector3 position) {
-		var navPos = player.GetComponent<NavigatePosition> ();
-		var netMove = player.GetComponent<NetworkMove> ();
-		navPos.NavigateTo (position);
-		netMove.OnMove (position);
+	public void OnClick (RaycastHit hit) {
+		var navigator = player.GetComponent<Navigator> ();
+
+		navigator.NavigateTo (hit.point);
+		Network.Move (hit.point);
 	}
 }

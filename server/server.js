@@ -19,7 +19,7 @@ io.on('connection', function(socket){
 
     console.log('client connected, broadcasting spawn, id: ', thisPlayerId);
 
-
+    socket.emit('register', { id: thisPlayerId });
     socket.broadcast.emit('spawn', { id: thisPlayerId });
     socket.broadcast.emit('requestPosition');
 
@@ -39,6 +39,13 @@ io.on('connection', function(socket){
         player.y = data.y;
 
         socket.broadcast.emit('move', data);
+    });
+
+    socket.on('follow', function(data) {
+
+        console.log('follow request', JSON.stringify(data));
+        data.id = thisPlayerId;
+        socket.broadcast.emit('follow', data)
     });
 
     socket.on('updatePosition', function(data) {
