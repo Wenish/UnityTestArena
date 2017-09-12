@@ -8,7 +8,7 @@ public class NavigatePosition : MonoBehaviour {
 	NavMeshAgent agent;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		agent = GetComponent<NavMeshAgent> ();
 	}
 
