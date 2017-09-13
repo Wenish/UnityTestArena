@@ -65,13 +65,11 @@ public class Network : MonoBehaviour {
 		Debug.Log ("follow request " + e.data);
 		var player = spawner.FindPlayer(e.data ["id"].str);
 
-		var target = spawner.FindPlayer(e.data ["targetId"].str);
+		var targetTransform = spawner.FindPlayer(e.data ["targetId"].str).transform;
 
-		Debug.Log ("target: " + target.name); 
+		var target = player.GetComponent<Targeter> ();
 
-		var follower = player.GetComponent<Follower> ();
-
-		follower.target = target.transform;
+		target.target = targetTransform;
 	}
 
 	void OnRequestPosition(SocketIOEvent e) {

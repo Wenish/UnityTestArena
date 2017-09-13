@@ -108,7 +108,7 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.SpatialMappingRenderer
-2895003a9ee3bfbe7dd6493949b52d3a Assembly-CSharp.dll:.ClickFollow
+1114bd2f76c37a713f699a9a667ed2f8 Assembly-CSharp.dll:.ClickFollow
 2b5bd81c259c691324a17af9a3e97e85 Assembly-CSharp.dll:.ClickMove
 56e8379e2e8475f8af18ab6e3ad56c22 Assembly-CSharp.dll:SocketIO.SocketIOComponent
 2c892730244c03cc08c8432bdba1b49d Assembly-CSharp.dll:.NetworkEntity
@@ -128,7 +128,7 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 3f32f08a64daf40b09ed864d96fe3840 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransform
 73843688b51256aed059f049c540bca8 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformChild
 528ea1fd7c01796fc60c4e2f172ea229 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
-f7b75db84042e8d151a638cffc03132c Assembly-CSharp.dll:.Follower
+6d3a3062a832353865292e0091a4f717 Assembly-CSharp.dll:.Follower
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback
 5f2ad81aa8994e8fbe25d1e57afe6773 UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.PlaymodeTestsController
 64eb32cc721b1cc68a91ed57461e188c UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.RemoteTestResultSender
@@ -139,3 +139,5 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.Spa
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.SpatialMappingRenderer
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestSocketIO
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.Navigator
+7febda2ace9b8ca245a1e2d4c3fdc382 Assembly-CSharp.dll:.Attacker
+0ea7e3a1b65cd933d7a007e6774c4eaa Assembly-CSharp.dll:.Targeter

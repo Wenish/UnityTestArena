@@ -6,17 +6,17 @@ using UnityEngine.AI;
 public class Navigator : MonoBehaviour {
 
 	NavMeshAgent agent;
-	Follower follower;
+	Targeter targeter;
 
 	// Use this for initialization
 	void Awake () {
 		agent = GetComponent<NavMeshAgent> ();
-		follower = GetComponent<Follower> ();
+		targeter = GetComponent<Targeter> ();
 	}
 
 	public void NavigateTo (Vector3 position) {
 		agent.SetDestination (position);
-		follower.target = null;
+		targeter.target = null;
 	}
 
 	void Update() {
