@@ -19,6 +19,7 @@ public class Network : MonoBehaviour {
 		socket.On ("spawn", OnSpawned);
 		socket.On ("move", OnMove);
 		socket.On ("follow", OnFollow);
+		socket.On ("attack", OnAttack);
 		socket.On ("disconnected", OnDisconnected);
 		socket.On ("requestPosition", OnRequestPosition);
 		socket.On ("updatePosition", OnUpdatePosition);
@@ -72,6 +73,18 @@ public class Network : MonoBehaviour {
 		target.target = targetTransform;
 	}
 
+	void OnAttack(SocketIOEvent e) {
+		Debug.Log ("recieved attack " + e.data);
+
+		var targetPlayer = spawner.FindPlayer(e.data ["targetId"].str);
+
+		targetPlayer.GetComponent<Hittable> ().OnHit ();
+
+		var attackingPlayer = spawner.FindPlayer(e.data ["id"].str);
+
+		attackingPlayer.GetComponent<Animator> ().SetTrigger ("Attack");
+	}
+
 	void OnRequestPosition(SocketIOEvent e) {
 		Debug.Log ("server is requesting position");
 		socket.Emit("updatePosition", VectorToJson(myPlayer.transform.position));
@@ -105,6 +118,11 @@ public class Network : MonoBehaviour {
 		// send pos to node
 		Debug.Log("sending follow player id" + Network.PlayerIdToJson(id));
 		socket.Emit("follow", Network.PlayerIdToJson(id));
+	}
+
+	static public void Attack(string targetId){
+		Debug.Log ("attacking player: " + Network.PlayerIdToJson (targetId));
+		socket.Emit("attack", Network.PlayerIdToJson(targetId));
 	}
 
 	static Vector3 GetVectorFromJSON(SocketIOEvent e){
