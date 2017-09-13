@@ -5,14 +5,23 @@ console.log('server started');
 
 var players = [];
 
+var playerSpeed = 3;
+
 io.on('connection', function(socket){
 
     var thisPlayerId = shortid.generate();
 
     var player = {
       id: thisPlayerId,
-      x: 0,
-      y: 0
+      destionation: {
+        x: 0,
+        y: 0
+      },
+      lastPosition: {
+        x: 0,
+        y: 0
+      },
+      lastMoveTime: 0
     }
 
     players[thisPlayerId] = player;
@@ -35,8 +44,31 @@ io.on('connection', function(socket){
         data.id = thisPlayerId;
         console.log('client moved', JSON.stringify(data));
 
-        player.x = data.x;
-        player.y = data.y;
+        player.destionation.x = data.d.x;
+        player.destionation.y = data.d.y;
+
+        console.log('distance between current and destionation: ', lineDistance(data.c, data.d));
+
+        var elapsedTime = Date.now() - player.lastMoveTime;
+
+        var travelDistanceLimit = elapsedTime * playerSpeed / 1000;
+
+        var requestedDistanceTraveled = lineDistance(player.lastPosition, data.c);
+
+        if(requestedDistanceTraveled > travelDistanceLimit) {
+          console.log('ALERT CHEATER: ', thisPlayerId);
+        }
+
+        player.lastMoveTime = Date.now();
+
+        player.lastPosition = data.c;
+
+        delete data.c;
+
+        data.x = data.d.x;
+        data.y = data.d.y;
+
+        delete data.d;
 
         socket.broadcast.emit('move', data);
     });
@@ -69,3 +101,16 @@ io.on('connection', function(socket){
         socket.broadcast.emit('disconnected', { id: thisPlayerId });
     });
 });
+
+var lineDistance = function(vectorA, vectorB) {
+  var xs = 0;
+  var ys = 0;
+
+  xs = vectorB.x - vectorA.x;
+  xs = xs * xs;
+
+  ys = vectorB.y - vectorA.y;
+  ys = ys * ys;
+
+  return Math.sqrt(xs + ys);
+}

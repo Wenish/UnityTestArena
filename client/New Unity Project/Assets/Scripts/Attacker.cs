@@ -18,6 +18,14 @@ public class Attacker : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (targeter.target != null) {
+			if (targeter.target.GetComponent<Hittable> ().IsDead) {
+				targeter.target = null;
+				return;
+			}
+		}
+
 		if (isReadyToAttack() && targeter.IsInRange (attackDistance) && !targeter.target.GetComponent<Hittable>().IsDead) {
 			Debug.Log ("attacking" + targeter.target.name);
 
